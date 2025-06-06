@@ -2,6 +2,8 @@
 
 A simple scheduling and reminder tool designed for children and elderly users. This frontend-only React application focuses on accessibility, ease of use, and a clean interface.
 
+![CareScheduler UI](./CareScheduler.png)
+
 ## Features
 
 - **User Types**: Toggle between "User" and "Caretaker" views
@@ -80,29 +82,3 @@ src/
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 - `npm run type-check` - Run TypeScript type checking
-
-## Technologies Used
-
-- React
-- TypeScript
-- Material-UI
-- date-fns
-- Vite
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Material-UI for the component library
-- date-fns for date manipulation
-- React team for the amazing framework
