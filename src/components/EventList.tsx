@@ -1,24 +1,45 @@
-import { Paper, Typography, List, ListItem, ListItemText, Divider, Box } from '@mui/material';
+import { Paper, Typography, List, ListItem, ListItemText, Divider, Box, Chip } from '@mui/material';
 import { format, isSameDay } from 'date-fns';
-import type { Event, UserRole } from '../types';
+import type { Event, User } from '../types';
 
 interface EventListProps {
   events: Event[];
   selectedDate: Date | null;
-  userRole: UserRole;
+  currentUser: User;
+  users: User[];
 }
 
-const EventList = ({ events, selectedDate, userRole }: EventListProps) => {
+const EventList = ({ events, selectedDate, currentUser, users }: EventListProps) => {
+  // Get events that the current user can see
+  const getVisibleEvents = () => {
+    if (currentUser.role === 'caretaker') {
+      // Caretakers can see events for their managed users
+      const managedUserIds = users
+        .filter(user => user.caretakerId === currentUser.id)
+        .map(user => user.id);
+      return events.filter(event => managedUserIds.includes(event.userId));
+    } else {
+      // Users can only see their own events
+      return events.filter(event => event.userId === currentUser.id);
+    }
+  };
+
   const getEventsForSelectedDate = () => {
     if (!selectedDate) return [];
-    return events.filter(event => 
+    const visibleEvents = getVisibleEvents();
+    return visibleEvents.filter(event => 
       isSameDay(new Date(event.date), selectedDate) ||
       (event.isRecurring && event.recurringDays?.includes(selectedDate.getDay()))
     );
   };
 
   const getRecurringEvents = () => {
-    return events.filter(event => event.isRecurring);
+    return getVisibleEvents().filter(event => event.isRecurring);
+  };
+
+  const getUserName = (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    return user?.name || 'Unknown User';
   };
 
   const selectedDateEvents = getEventsForSelectedDate();
@@ -60,6 +81,13 @@ const EventList = ({ events, selectedDate, userRole }: EventListProps) => {
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         {event.description}
                       </Typography>
+                      {currentUser.role === 'caretaker' && (
+                        <Chip 
+                          label={getUserName(event.userId)} 
+                          size="small" 
+                          sx={{ mt: 0.5, mr: 0.5 }}
+                        />
+                      )}
                       {event.isRecurring && (
                         <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 0.5 }}>
                           Recurring event
@@ -100,6 +128,13 @@ const EventList = ({ events, selectedDate, userRole }: EventListProps) => {
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                           {event.description}
                         </Typography>
+                        {currentUser.role === 'caretaker' && (
+                          <Chip 
+                            label={getUserName(event.userId)} 
+                            size="small" 
+                            sx={{ mt: 0.5, mr: 0.5 }}
+                          />
+                        )}
                         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
                           Repeats on: {event.recurringDays?.map(day => 
                             ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]

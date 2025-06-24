@@ -12,20 +12,26 @@ import {
   Checkbox,
   FormControl,
   FormLabel,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@mui/material';
-import type { Event } from '../types';
+import type { Event, User } from '../types';
 
 interface EventFormProps {
+  currentUser: User;
+  users: User[];
   onSubmit: (event: Omit<Event, 'id' | 'createdBy'>) => void;
 }
 
-const EventForm = ({ onSubmit }: EventFormProps) => {
+const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringDays, setRecurringDays] = useState<number[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
 
   const daysOfWeek = [
     { value: 0, label: 'Sunday' },
@@ -37,8 +43,25 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
     { value: 6, label: 'Saturday' },
   ];
 
+  // Get users that the current user can create events for
+  const getAvailableUsers = () => {
+    if (currentUser.role === 'caretaker') {
+      // Caretakers can create events for their managed users
+      return users.filter(user => user.caretakerId === currentUser.id);
+    } else {
+      // Users can only create events for themselves
+      return [currentUser];
+    }
+  };
+
+  const availableUsers = getAvailableUsers();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Determine the user ID for the event
+    const userId = currentUser.role === 'caretaker' ? selectedUserId : currentUser.id;
+    
     onSubmit({
       title,
       description,
@@ -46,7 +69,9 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
       time,
       isRecurring,
       recurringDays: isRecurring ? recurringDays : undefined,
+      userId,
     });
+    
     // Reset form
     setTitle('');
     setDescription('');
@@ -54,6 +79,7 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
     setTime('');
     setIsRecurring(false);
     setRecurringDays([]);
+    setSelectedUserId('');
   };
 
   const handleDayToggle = (day: number) => {
@@ -64,6 +90,20 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
     );
   };
 
+  // Don't show form if user can't create events
+  if (currentUser.role === 'user' && !currentUser.canSelfSchedule) {
+    return (
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Typography variant="h6" component="h3" gutterBottom>
+          Event Management
+        </Typography>
+        <Typography color="text.secondary">
+          Your caretaker has disabled self-scheduling. Please contact your caretaker to add events.
+        </Typography>
+      </Paper>
+    );
+  }
+
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
       <Typography variant="h6" component="h3" gutterBottom>
@@ -72,13 +112,30 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
 
       <form onSubmit={handleSubmit}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {currentUser.role === 'caretaker' && availableUsers.length > 0 && (
+            <FormControl fullWidth>
+              <InputLabel>For User</InputLabel>
+              <Select
+                value={selectedUserId}
+                onChange={(e) => setSelectedUserId(e.target.value)}
+                required
+                label="For User"
+              >
+                {availableUsers.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
           <TextField
             label="Title"
             value={title}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
             required
             fullWidth
-            size="large"
           />
 
           <TextField
@@ -147,7 +204,13 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
             variant="contained"
             size="large"
             sx={{ mt: 2 }}
-            disabled={!title || !date || !time || (isRecurring && recurringDays.length === 0)}
+            disabled={
+              !title || 
+              !date || 
+              !time || 
+              (isRecurring && recurringDays.length === 0) ||
+              (currentUser.role === 'caretaker' && !selectedUserId)
+            }
           >
             Add Event
           </Button>
