@@ -106,12 +106,12 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
 
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-      <Typography variant="h6" component="h3" gutterBottom>
+      <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
         Add New Event or Reminder
       </Typography>
 
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {currentUser.role === 'caretaker' && availableUsers.length > 0 && (
             <FormControl fullWidth>
               <InputLabel>For User</InputLabel>
@@ -120,6 +120,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 required
                 label="For User"
+                size="medium"
               >
                 {availableUsers.map((user) => (
                   <MenuItem key={user.id} value={user.id}>
@@ -136,6 +137,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
             onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
             required
             fullWidth
+            size="medium"
           />
 
           <TextField
@@ -143,11 +145,12 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
             value={description}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
             multiline
-            rows={2}
+            rows={3}
             fullWidth
+            size="medium"
           />
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
             <TextField
               label="Date"
               type="date"
@@ -155,6 +158,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
               onChange={(e: ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
               required
               fullWidth
+              size="medium"
               InputLabelProps={{ shrink: true }}
             />
 
@@ -165,6 +169,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
               onChange={(e: ChangeEvent<HTMLInputElement>) => setTime(e.target.value)}
               required
               fullWidth
+              size="medium"
               InputLabelProps={{ shrink: true }}
             />
           </Box>
@@ -181,8 +186,8 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
 
           {isRecurring && (
             <FormControl component="fieldset" sx={{ mt: 1 }}>
-              <FormLabel component="legend">Repeat on:</FormLabel>
-              <FormGroup row>
+              <FormLabel component="legend" sx={{ mb: 2 }}>Repeat on:</FormLabel>
+              <FormGroup row sx={{ gap: 1, flexWrap: 'wrap' }}>
                 {daysOfWeek.map(({ value, label }) => (
                   <FormControlLabel
                     key={value}
@@ -193,6 +198,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
                       />
                     }
                     label={label}
+                    sx={{ minWidth: 'fit-content' }}
                   />
                 ))}
               </FormGroup>
@@ -203,7 +209,7 @@ const EventForm = ({ currentUser, users, onSubmit }: EventFormProps) => {
             type="submit"
             variant="contained"
             size="large"
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, py: 1.5 }}
             disabled={
               !title || 
               !date || 

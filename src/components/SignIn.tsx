@@ -32,10 +32,14 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
     }
 
     // Mock authentication - in a real app, this would call an API
+    // Use the email as the name for now, or extract name from email
+    const nameFromEmail = email.split('@')[0];
+    const displayName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+    
     const mockUser: User = {
       id: '1',
       email,
-      name: 'John Doe',
+      name: displayName,
       role: 'user',
       canSelfSchedule: true,
       createdAt: new Date(),
@@ -62,12 +66,19 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography variant="h3" component="h1" gutterBottom>
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        py: 4
+      }}>
+        <Typography variant="h2" component="h1" gutterBottom sx={{ mb: 4, textAlign: 'center' }}>
           CareScheduler
         </Typography>
         
-        <Paper elevation={3} sx={{ p: 4, width: '100%', mt: 3 }}>
+        <Paper elevation={6} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
           <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} sx={{ mb: 3 }}>
             <Tab label="Sign In" />
             <Tab label="Register" />
@@ -89,6 +100,7 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 margin="normal"
                 required
+                size="medium"
               />
               <TextField
                 fullWidth
@@ -98,12 +110,14 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 margin="normal"
                 required
+                size="medium"
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                size="large"
+                sx={{ mt: 3, mb: 2, py: 1.5 }}
               >
                 Sign In
               </Button>
@@ -117,6 +131,7 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
                 onChange={(e) => setName(e.target.value)}
                 margin="normal"
                 required
+                size="medium"
               />
               <TextField
                 fullWidth
@@ -126,6 +141,7 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 margin="normal"
                 required
+                size="medium"
               />
               <TextField
                 fullWidth
@@ -135,30 +151,35 @@ const SignIn = ({ onSignIn, onRegister }: SignInProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 margin="normal"
                 required
+                size="medium"
               />
-              <Box sx={{ mt: 2, mb: 2 }}>
+              <Box sx={{ mt: 3, mb: 3 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   I am a:
                 </Typography>
-                <Button
-                  variant={role === 'user' ? 'contained' : 'outlined'}
-                  onClick={() => setRole('user')}
-                  sx={{ mr: 1 }}
-                >
-                  User
-                </Button>
-                <Button
-                  variant={role === 'caretaker' ? 'contained' : 'outlined'}
-                  onClick={() => setRole('caretaker')}
-                >
-                  Caretaker
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    variant={role === 'user' ? 'contained' : 'outlined'}
+                    onClick={() => setRole('user')}
+                    fullWidth
+                  >
+                    User
+                  </Button>
+                  <Button
+                    variant={role === 'caretaker' ? 'contained' : 'outlined'}
+                    onClick={() => setRole('caretaker')}
+                    fullWidth
+                  >
+                    Caretaker
+                  </Button>
+                </Box>
               </Box>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                size="large"
+                sx={{ mt: 3, mb: 2, py: 1.5 }}
               >
                 Register
               </Button>

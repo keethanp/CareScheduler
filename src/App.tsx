@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ThemeProvider, createTheme, CssBaseline, Box, Container, Tabs, Tab } from '@mui/material'
+import { ThemeProvider, createTheme, CssBaseline, Box, Container, Tabs, Tab, Typography } from '@mui/material'
 import type { AppState, User, Event, Message, CareRequest } from './types'
 import SignIn from './components/SignIn'
 import ToggleRole from './components/ToggleRole'
@@ -213,9 +213,20 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box className="app-container" sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-            <h1>CareScheduler</h1>
+        <Container maxWidth="xl" sx={{ py: 2 }}>
+          {/* Header */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            mb: 3,
+            pb: 2,
+            borderBottom: 1,
+            borderColor: 'divider'
+          }}>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+              CareScheduler
+            </Typography>
             <ToggleRole
               currentUser={appState.currentUser}
               onHighContrastToggle={handleHighContrastToggle}
@@ -225,8 +236,18 @@ function App() {
           </Box>
 
           {/* Tabs for different views */}
-          <Box sx={{ mb: 4 }}>
-            <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+          <Box sx={{ mb: 3 }}>
+            <Tabs 
+              value={activeTab} 
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              sx={{
+                '& .MuiTab-root': {
+                  minHeight: 48,
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                }
+              }}
+            >
               <Tab label="Calendar" />
               <Tab label="Chat" />
               {appState.currentUser.role === 'caretaker' && (
@@ -240,7 +261,12 @@ function App() {
 
           {/* Calendar Tab */}
           {activeTab === 0 && (
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 4 }}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, 
+              gap: 4,
+              alignItems: 'start'
+            }}>
               <Box>
                 <Calendar
                   selectedDate={appState.selectedDate}
@@ -267,7 +293,13 @@ function App() {
 
           {/* Chat Tab */}
           {activeTab === 1 && (
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr' }, gap: 4 }}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', md: '1fr' }, 
+              gap: 4,
+              maxWidth: 800,
+              mx: 'auto'
+            }}>
               <Chat
                 messages={appState.messages}
                 currentUser={appState.currentUser}
@@ -279,26 +311,30 @@ function App() {
 
           {/* User Management Tab (Caretakers only) */}
           {activeTab === 2 && appState.currentUser.role === 'caretaker' && (
-            <UserManagement
-              currentUser={appState.currentUser}
-              users={appState.users}
-              careRequests={appState.careRequests}
-              onSendCareRequest={handleSendCareRequest}
-              onToggleSelfSchedule={handleToggleSelfSchedule}
-              onAcceptCareRequest={handleAcceptCareRequest}
-              onRejectCareRequest={handleRejectCareRequest}
-            />
+            <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
+              <UserManagement
+                currentUser={appState.currentUser}
+                users={appState.users}
+                careRequests={appState.careRequests}
+                onSendCareRequest={handleSendCareRequest}
+                onToggleSelfSchedule={handleToggleSelfSchedule}
+                onAcceptCareRequest={handleAcceptCareRequest}
+                onRejectCareRequest={handleRejectCareRequest}
+              />
+            </Box>
           )}
 
           {/* Care Requests Tab (Users only) */}
           {activeTab === 2 && appState.currentUser.role === 'user' && (
-            <CareRequests
-              currentUser={appState.currentUser}
-              users={appState.users}
-              careRequests={appState.careRequests}
-              onAcceptCareRequest={handleAcceptCareRequest}
-              onRejectCareRequest={handleRejectCareRequest}
-            />
+            <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+              <CareRequests
+                currentUser={appState.currentUser}
+                users={appState.users}
+                careRequests={appState.careRequests}
+                onAcceptCareRequest={handleAcceptCareRequest}
+                onRejectCareRequest={handleRejectCareRequest}
+              />
+            </Box>
           )}
         </Container>
       </Box>

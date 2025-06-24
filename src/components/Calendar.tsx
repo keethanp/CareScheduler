@@ -45,15 +45,25 @@ const Calendar = ({ selectedDate, onDateSelect, events }: CalendarProps) => {
 
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" component="h2">
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
           {format(currentMonth, 'MMMM yyyy')}
         </Typography>
-        <Box>
-          <Button onClick={handlePrevMonth} aria-label="previous month">
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button 
+            onClick={handlePrevMonth} 
+            aria-label="previous month"
+            variant="outlined"
+            size="small"
+          >
             ←
           </Button>
-          <Button onClick={handleNextMonth} aria-label="next month">
+          <Button 
+            onClick={handleNextMonth} 
+            aria-label="next month"
+            variant="outlined"
+            size="small"
+          >
             →
           </Button>
         </Box>
@@ -66,7 +76,12 @@ const Calendar = ({ selectedDate, onDateSelect, events }: CalendarProps) => {
             key={day}
             variant="subtitle2"
             align="center"
-            sx={{ fontWeight: 'bold', py: 1 }}
+            sx={{ 
+              fontWeight: 'bold', 
+              py: 1.5,
+              color: 'text.secondary',
+              fontSize: '0.875rem'
+            }}
           >
             {day}
           </Typography>
@@ -87,19 +102,31 @@ const Calendar = ({ selectedDate, onDateSelect, events }: CalendarProps) => {
               variant={isSelected ? 'contained' : 'outlined'}
               onClick={() => onDateSelect(day)}
               sx={{
-                height: '80px',
+                height: { xs: '60px', sm: '80px' },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                opacity: isCurrentMonth ? 1 : 0.5,
+                opacity: isCurrentMonth ? 1 : 0.4,
                 position: 'relative',
                 overflow: 'hidden',
-                minWidth: 0, // Prevent button from expanding beyond grid
+                minWidth: 0,
+                borderRadius: 1,
+                '&:hover': {
+                  opacity: isCurrentMonth ? 0.8 : 0.4,
+                }
               }}
               aria-label={`${format(day, 'MMMM d, yyyy')}${dayEvents.length ? `, ${dayEvents.length} events` : ''}`}
             >
-              <Typography variant="body2" sx={{ position: 'absolute', top: 4, left: 4 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  position: 'absolute', 
+                  top: 4, 
+                  left: 4,
+                  fontWeight: isSelected ? 'bold' : 'normal'
+                }}
+              >
                 {format(day, 'd')}
               </Typography>
               {dayEvents.length > 0 && (
@@ -111,21 +138,29 @@ const Calendar = ({ selectedDate, onDateSelect, events }: CalendarProps) => {
                     right: 4,
                     display: 'flex',
                     gap: 0.5,
+                    flexWrap: 'wrap',
                   }}
                 >
                   {dayEvents.slice(0, 3).map(event => (
                     <Box
                       key={event.id}
                       sx={{
-                        width: 8,
-                        height: 8,
+                        width: 6,
+                        height: 6,
                         borderRadius: '50%',
-                        bgcolor: 'primary.main',
+                        bgcolor: isSelected ? 'primary.contrastText' : 'primary.main',
                       }}
                     />
                   ))}
                   {dayEvents.length > 3 && (
-                    <Typography variant="caption" sx={{ ml: 0.5 }}>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        ml: 0.5,
+                        fontSize: '0.7rem',
+                        color: isSelected ? 'primary.contrastText' : 'text.secondary'
+                      }}
+                    >
                       +{dayEvents.length - 3}
                     </Typography>
                   )}
